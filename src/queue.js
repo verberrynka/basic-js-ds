@@ -12,6 +12,7 @@ const { NotImplementedError } = require('../lib/errors');
  * queue.dequeue(); // returns the top element from queue and deletes it, returns 1
  * queue.getUnderlyingList() // returns { value: 3, next: null }
  */
+
 class ListNode {
   constructor(x) {
     this.value = x;
@@ -21,36 +22,62 @@ class ListNode {
 
 class Queue {
   constructor() {
-    this.elements = [];
+    this.head = null;
+    this.tail = null;
+    this.length = 0;
   }
 
   getUnderlyingList() {
-    if (this.elements.length === 0) {
+    if (this.length === 0) {
       return null;
     }
-    let head = null;
-    let current = null;
 
-    for (const value of this.elements) {
-        const newNode = new ListNode(value);
-        if (!head) {
-            head = newNode;
-            current = head;
-        } else {
-            current.next = newNode;
-            current = newNode;
-        }
+    let currentListNode = this.head;
+    let resultHead = null;
+    let resultCurrent = null;
+
+    while (currentListNode) {
+      const plainObjectNode = { value: currentListNode.value, next: null };
+
+      if (!resultHead) {
+        resultHead = plainObjectNode;
+        resultCurrent = resultHead;
+      } else {
+        resultCurrent.next = plainObjectNode;
+        resultCurrent = plainObjectNode;
+      }
+      currentListNode = currentListNode.next;
     }
 
-    return head;
+    return resultHead;
   }
 
   enqueue(value) {
-    this.elements.push(value);
+    const newNode = new ListNode(value);
+    if (!this.head) {
+      this.head = newNode;
+      this.tail = newNode;
+    } else {
+      this.tail.next = newNode;
+      this.tail = newNode;
+    }
+    this.length++;
   }
 
   dequeue() {
-    return this.elements.shift();
+    if (!this.head) {
+      return undefined;
+    }
+
+    const valueToRemove = this.head.value;
+    this.head = this.head.next;
+    this.length--;
+
+    if (this.length === 0) {
+      this.tail = null;
+    }
+
+    return valueToRemove;
   }
 }
 
